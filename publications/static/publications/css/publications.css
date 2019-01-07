@@ -1,0 +1,22 @@
+.la__publication_title,
+.la__publication_author,
+.la__publication_genre,
+.la__publication_description {
+    font-size: 12px;
+}
+
+.la__publication_title {
+    font-weight: bold;
+}
+
+.la__publication_description {
+    padding: 14px 24px;
+}
+
+.la__publication {
+    padding-bottom: 10px;
+}
+
+.libs__publication_text img {
+    max-width: 80%;
+}

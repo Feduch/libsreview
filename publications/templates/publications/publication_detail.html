@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+{% load static misc_tags books_inline authors_inline series_inline %}
+{% load render_bundle from webpack_loader %}
+{% block title %}{{ publication.title }}{% endblock %}
+{% block description %}{{ publication.preview_text | striptags | remove_newlines }}{% endblock %}
+{% block breadcrumb %}<a href="/">Главная</a> / <a href="/publication/">Статьи, посты и рецензии</a> / {{ publication.title }} {% endblock %}
+{% block content %}
+    <div class="row">
+        <div class="col-12 col-lg-8">
+            <div class="row">
+                <div class="col-12">
+                    <div class="card libs__card">
+                        <div class="card-body libs__publication_text">
+                            <h5 class="card-title">{{ publication.title }}</h5>
+                            {% if publication.image %}
+                                <p>
+                                    <img src="{{ publication.image.url }}" alt="{{ publication.title }}">
+                                </p>
+                            {% endif %}
+                            <p class="card-text">
+                                {{ publication.detail_text | safe }}
+                            </p>
+                        </div>
+                        <div class="card-footer text-muted">
+                            <span title="Просмотры"><img src="{% static 'images/eye.png' %}" alt="Количество просмотров"> {{ publication.show_counter }}</span>
+                            Автор поста {{ publication.user }}, дата {{ publication.date_create }}
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12" id="vue-books-list">
+                    {% books_inline publication.book.all %}
+                </div>
+                <div class="col-12" id="vue-authors-list">
+                    {% authors_inline publication.author.all %}
+                </div>
+                <div class="col-12">
+                    {% series_inline publication.series.all %}
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-lg-4">
+            {% include "ratings_block_right.html" %}
+        </div>
+    </div>
+{% endblock %}
+{% block script_footer %}
+    {% render_bundle 'publications-detail' %}
+{% endblock %}

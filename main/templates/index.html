@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% load static post_post post_book post_collection cache %}
+{% block title %}Libs.ru - поиск лучших книг и авторов{% endblock %}
+{% block description %}Все авторы и книги мира, лучшие книги, лучшие авторы, онлайн общение с авторами, онлайн написание книг{% endblock %}
+{% block content %}
+    {% cache 3600 libs__home %}
+        <div class="row libs__home">
+            <div class="col-12 col-lg-8">
+                <ul class="nav nav-tabs" id="myTab" role="tablist">
+                    <li class="nav-item">
+                        <a class="nav-link active" id="best-tab" data-toggle="tab" href="#best" role="tab" aria-controls="best" aria-selected="true">Лучшие</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="all-tab" data-toggle="tab" href="#all" role="tab" aria-controls="all" aria-selected="false">Всё подряд</a>
+                    </li>
+                </ul>
+                <div class="tab-content" id="libs__main_tb_content">
+                    <div class="tab-pane fade show active" id="best" role="tabpanel" aria-labelledby="best-tab">
+                        {% for item in best %}
+                            {% if item.get_type == 'publication' %}
+                                {% post_post item %}
+                            {% elif item.get_type == 'collection' %}
+                                {% post_collection item %}
+                            {% else %}
+                                {% post_book item %}
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                    <div class="tab-pane fade" id="all" role="tabpanel" aria-labelledby="all-tab">
+                        {% for item in all %}
+                            {% if item.get_type == 'publication' %}
+                                {% post_post item %}
+                            {% elif item.get_type == 'collection' %}
+                                {% post_collection item %}
+                            {% else %}
+                                {% post_book item %}
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-lg-4">
+                {% include "ratings_block_right.html" %}
+            </div>
+        </div>
+    {% endcache %}
+{% endblock %}

@@ -1,0 +1,20 @@
+{% load static %}
+<div class="card libs__card">
+    <div class="card-body">
+        <h5 class="card-title"><a href="{{ post.get_absolute_url }}">{{ post.title | safe }}</a></h5>
+        <span class="badge badge-info">Публикация</span>
+        {% if post.image %}
+                <p>
+                    <a href="{{ post.get_absolute_url }}"><img src="{{ post.image.url }}" alt="{{ post.title }}"></a>
+                </p>
+            {% endif %}
+        <p class="card-text">
+            {{ post.preview_text | safe }}
+        </p>
+        <a href="{{ post.get_absolute_url }}" class="btn btn-primary">Читать дальше</a>
+    </div>
+    <div class="card-footer text-muted">
+        <span title="Просмотры"><img src="{% static 'images/eye.png' %}" alt="Количество просмотров"> {{ post.show_counter }}</span>
+        Автор поста {{ post.user }}, дата {{ post.date_create }}
+    </div>
+</div>

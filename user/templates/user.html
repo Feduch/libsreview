@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% load l10n static %}
+{% load render_bundle from webpack_loader %}
+{% block title %}Профиль {{ username }}{% endblock %}
+{% block description %}{% endblock %}
+{% block page_title %}Профиль {{ username }}{% endblock %}
+{% block page_title_small %}Профиль {{ username }}{% endblock %}
+
+{% block breadcrumb %}
+    <a href="/">Главная</a> / <a href="/users/">Пользователи</a> / <a href="{{ url }}">{{ username }}</a>
+{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-12 col-lg-8">
+            <div class="row libs__avatar">
+                <div class="col-12">
+                    <img src="{{ avatar }}">
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12">
+                    <ul class="nav nav-tabs" id="ProfileTab" role="tablist">
+                        <li class="nav-item">
+                            <a class="nav-link active" id="home-tab" data-toggle="tab" href="#profile" role="tab" aria-controls="profile" aria-selected="true">Профиль</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="profile-tab" data-toggle="tab" href="#reviews" role="tab" aria-controls="reviews" aria-selected="false">Отзывы о книгах</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="contact-tab" data-toggle="tab" href="#collections" role="tab" aria-controls="collections" aria-selected="false">Коллекции</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="contact-tab" data-toggle="tab" href="#best" role="tab" aria-controls="best" aria-selected="false">Что понравилось</a>
+                        </li>
+                    </ul>
+                    <div class="tab-content" id="ProfileTabContent">
+                        <div class="tab-pane fade show active" id="profile" role="tabpanel" aria-labelledby="profile-tab">...</div>
+                        <div class="tab-pane fade" id="reviews" role="tabpanel" aria-labelledby="reviews-tab">...</div>
+                        <div class="tab-pane fade" id="collections" role="tabpanel" aria-labelledby="collections-tab">...</div>
+                        <div class="tab-pane fade" id="best" role="tabpanel" aria-labelledby="best-tab">...</div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+{% endblock %}
+{% block script_footer %}
+{% endblock %}

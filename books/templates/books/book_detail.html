@@ -1,0 +1,421 @@
+{% extends 'base.html' %}
+{% load l10n static post_inline %}
+{% load render_bundle from webpack_loader %}
+{% block title %}{{ book.title }} (скачать fb2), {{ book.get_authors }}{% endblock %}
+{% block description %}{{ book.description| striptags | truncatewords:50}}{% endblock %}
+{% block page_title %}Книга {{ book.title }}{% endblock %}
+{% block page_title_small %}Книга {{ book.title }}{% endblock %}
+
+{% block meta %}
+    <meta property="og:title" content="Книга {{ book.title }}" />
+    <meta property="og:type" content="books.book" />
+    <meta property="og:url" content="https://{{ request.get_host }}{{ book.get_absolute_url }}" />
+    <meta property="og:image" content="https://{{ request.get_host }}{{ book.get_image }}" />
+    <meta property="og:description" content="{{ book.description | striptags | truncatewords:100 }}" />
+    <meta property="book:author" content="{{ book.get_authors }}" />
+    <meta property="book:release_date" content="{{ book.year }}" />
+    {% if book.isbn %}
+        <meta property="books:isbn" content="{{ book.isbn }}" />
+    {% endif %}
+{% endblock %}
+{% block additional_scripts %}
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+            // Initialize new request
+            const request_bookreads = new XMLHttpRequest();
+            try {
+                const isbn = document.querySelector('#isbn-init').dataset.isbn;
+                request_bookreads.open('GET', '/api/rating_from_goodreads/?isbn='+isbn, false);
+
+                // Callback function for when request completes
+                request_bookreads.onload = () => {
+
+                    // console.log(request_bookreads.responseText)
+                    // Extract JSON data from request
+                    const data = JSON.parse(request_bookreads.responseText);
+                    // console.log("inside script 1")
+                    // Update the result div
+                    if (data.success) {
+                        const contents = `Рейтинг книги по версии Goodreads -  ${data.book_goodreads.average_rating}, у книги ${data.book_goodreads.work_ratings_count} оценок.`
+                        document.querySelector('#goodreads-rating').innerHTML = contents;
+                        // console.log(contents)
+                    }
+                    else {
+                        document.querySelector('#goodreads-rating').innerHTML = '';
+                        // console.log("inside else 1")
+                    }
+                }
+
+                // Add data to send with request
+                // const data = new FormData();
+                // data.append('isbn', isbn);
+                // data.append('CSRF', getCSRFTokenValue());
+
+
+                // Send request
+                // request.send(data);
+                request_bookreads.send(null);
+            } catch (err) {
+                // обработка ошибки
+                console.log(err)
+            }
+            return false;
+
+        });
+    </script>
+
+{% endblock %}
+{% block breadcrumb %}
+    <div itemscope itemtype="http://schema.org/BreadcrumbList">
+        <span itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem">
+            <a itemprop="item" href="/"><span itemprop="name">Главная</span></a> /
+            <meta itemprop="position" content="1" />
+        </span>
+        <span itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem">
+            <a itemprop="item" href="/book/"><span itemprop="name">Книги</span></a> /
+            <meta itemprop="position" content="2" />
+        </span>
+        <span itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem">
+            <a itemprop="item" href="{{ book.get_absolute_url }}"><span itemprop="name">{{ book.title }}</span></a>
+            <meta itemprop="position" content="3" />
+        </span>
+    </div>
+{% endblock %}
+
+{% block content %}
+    <div class="row" itemprop="mainEntity" itemscope itemtype="http://schema.org/Book">
+        <div class="col">
+            <div class="row">
+                <div class="col-12 col-md-2 col-lg-2 d-none d-lg-block">
+                    <div class="la__book_cover">
+                        <img itemprop="image" src="{{ book.get_image }}" alt="{{ book.title }}" class="figure-img img-fluid" />
+                    </div>
+                    <div style="text-align: center;padding: 5px 0" class="d-none d-lg-block">
+                        <script src="//yastatic.net/es5-shims/0.0.2/es5-shims.min.js"></script>
+                        <script src="//yastatic.net/share2/share.js"></script>
+                        <div class="ya-share2" data-services="vkontakte,facebook,odnoklassniki,pocket" data-counter=""></div>
+                    </div>
+
+                </div>
+                <div class="col-12 d-lg-none d-xl-none">
+                    <div class="row">
+                        <div class="col-8">
+                            <p>Обратите внимание, вы можете подбирать что почитать на страницах</p>
+                            <p></p>
+                            <ul class="list-unstyled">
+                                <li><a href="{% url 'rating-best-today' %}">лучшие книги дня</a></li>
+                                <li><a href="{% url 'rating-best-week' %}">лучшие книги недели</a></li>
+                            </ul>
+                        </div>
+                        <div class="col-4">
+                            <img itemprop="image" src="{{ book.get_image }}" alt="{{ book.title }}" class="figure-img img-fluid" />
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-md-10 col-lg-8">
+                    <div class="row">
+                        <div class="col-6">
+                            <ul class="la__top_set">
+                                <li class="la__top_set__header">Информация</li>
+                                <li>
+                                    {% if is_admin %}
+                                        <a href="/book/editor/{{ book.id }}">Редактировать книгу >></a>
+                                    {% endif %}
+                                    {% if book.original_title %}
+                                        <div class="libs__param">
+                                            <strong>Оригинальное название:</strong>
+                                            {{ book.original_title }}
+                                        </div>
+                                    {% endif %}
+                                    <div class="libs__param">
+                                        <strong>Название:</strong>
+                                        <span itemprop="name">{{ book.title }}</span>
+                                    </div>
+                                    {% if book.isbn is not None %}
+                                        <div class="libs__param">
+                                            <strong>ISBN:</strong>
+                                            <span itemprop="isbn" id="isbn-init" data-isbn="{{ book.isbn }}">{{ book.isbn }}</span>
+                                        </div>
+                                    {% endif %}
+                                    <div class="libs__param">
+                                        <strong>Автор(ы):</strong>
+                                        <div itemprop="author" itemscope itemtype="http://schema.org/Person">
+                                            {{ book.get_link_authors | safe }}
+                                        </div>
+                                    </div>
+                                    <div class="libs__param" itemprop="aggregateRating" itemscope itemtype="http://schema.org/AggregateRating">
+                                        <strong>Оценка:</strong>
+                                        <meta content="1" itemprop="worstRating">
+                                        <span itemprop="ratingValue">{{ book.rating | unlocalize }}</span>
+                                        из <span itemprop="bestRating">5</span>
+                                        {% if rating_count %}
+                                            голосов <span itemprop="ratingCount">{{ rating_count }}</span>
+                                        {% else %}
+                                            голосов <span itemprop="ratingCount">0</span>
+                                        {% endif %}
+                                    </div>
+                                    {% if book.year %}
+                                        <div class="libs__param">
+                                            <strong>Год:</strong>
+                                            <span itemprop="datePublished">{{ book.year }}</span>
+                                        </div>
+                                    {% endif %}
+                                    {% if book.series %}
+                                        <div class="libs__param">
+                                            <strong>Серия:</strong>
+                                            <a href="{{ book.series.get_absolute_url }}">{{ book.series }}</a>
+                                        </div>
+                                    {% endif %}
+                                    {% if book.nr_series %}
+                                        <div class="libs__param">
+                                            <strong>Номер книги в серии:</strong>
+                                            <a href="{{ book.series.get_absolute_url }}">{{ book.nr_series }}</a>
+                                        </div>
+                                    {% endif %}
+                                    <div class="libs__param">
+                                        <strong>Жанр(ы):</strong>
+                                        {{ book.get_link_genres | safe }}
+                                    </div>
+                                    {% if awards %}
+                                        <div class="libs__param">
+                                            <strong>Премии:</strong>
+                                            {% for award in awards %}
+                                                <a itemprop="url" href="{{ award.get_absolute_url }}"><span itemprop="award">{{ award.title }}</span></a>
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="col-6">
+                            <div class="la__book_ratings" id="book-ratings">
+                                <ul class="la__top_set">
+                                    <li class="la__top_set__header">Рейтинг</li>
+                                    <li class="libs__book_rating" id="">
+                                        <star-rating
+                                                v-bind:increment="1"
+                                                v-bind:max-rating="5"
+                                                :round-start-rating="false"
+                                                inactive-color="#ccc"
+                                                active-color="#45a6f3"
+                                                v-bind:star-size="25"
+                                                :read-only="false"
+                                                :rating="{{ book.rating | unlocalize }}"
+                                                @rating-selected="setBookRating($event, {{ book.id }})"
+                                        >
+                                        </star-rating>
+                                    </li>
+                                    <li class="libs__book_rating" id="goodreads-rating"></li>
+                                    <li class="libs__book_comment_add">
+                                        <a href="#libs-add-comments" class="btn btn-primary btn-sm" onclick="yaCounter15891616.reachGoal('libsbtn-add-comment-top'); return true;">Оставить отзыв</a>
+                                    </li>
+                                    <li class="libs__book_comment_list">
+                                        <a href="#libs-comments">Посмотреть отзывы</a>
+                                    </li>
+                                    <li class="libs__book_rating_info">
+                                        <div class="row">
+                                            <div class="col-12 col-lg-6">просмотров - {{ book.show_counter }}</div>
+                                            <div class="col-12 col-lg-6">статей - {{ posts | length }}</div>
+                                        </div>
+                                    </li>
+                                    <li class="libs__book_genre_place_info">
+                                        {% if book.year %}
+                                            <div><strong>Рейтинг по году выпуска:</strong></div>
+                                            <div>
+                                                <year-place
+                                                        book-id="{{ book.id }}"
+                                                        book-year="{{ book.year }}"
+                                                ><img src="/static/images/preloader.gif"></year-place>
+                                                место среди всех книг в {% if book.year >= 1800 %}<a href="/best-{{ book.year }}/">{{ book.year }}</a>{% else %}{{ book.year }}{% endif %} года
+                                            </div>
+                                            {% for genre in book.get_link_genres_collection %}
+                                                <div>
+                                                    <genre-year-place
+                                                            genre-id="{{ genre.id }}"
+                                                            book-id="{{ book.id }}"
+                                                            book-year="{{ book.year }}"
+                                                    ><img src="/static/images/preloader.gif"></genre-year-place>
+                                                    место за {% if book.year >= 1800 %}<a href="/best-{{ book.year }}/">{{ book.year }}</a>{% else %}{{ book.year }}{% endif %} год в жанре <a href="{{ genre.url }}">{{ genre.name }}</a>
+                                                </div>
+                                            {% endfor %}
+                                        {% endif %}
+                                        <div><strong>Рейтинги в жанрах:</strong></div>
+                                        {% for genre in book.get_link_genres_collection %}
+                                            <div>
+                                                <genre-place
+                                                        genre-id="{{ genre.id }}"
+                                                        book-id="{{ book.id }}"
+                                                ><img src="/static/images/preloader.gif"></genre-place>
+                                                место среди всех книг в жанре <a href="{{ genre.url }}">{{ genre.name }}</a>
+                                            </div>
+                                        {% endfor %}
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row p-3 mb-2 bg-light text-dark" id="partner-price">
+                        <div class="col-12">
+                            <div class="libs__book_readonline" id="litres-fragment-read">
+                                <a data-toggle="modal" class="btn btn-primary btn-sm" data-target="#readFragment" onclick="yaCounter15891616.reachGoal('libsbtn-read-online'); return true;">Читать онлайн</a>
+                                легально прочитать отрывок из книги
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <h5>Купить книгу "{{ book.title }}"</h5>
+                        </div>
+                        <partner-price
+                                title="{{ book.title }}"
+                                author="{{ book.get_author }}"
+                                libsid="{{ book.id }}"
+                                :litres-id="{{ book.litres_id }}"
+                        ><img src="/static/images/nav_preloader.gif" /></partner-price>
+                    </div>
+                    <div class="row p-3 mb-2 bg-light text-dark" id="litres-fragment-download">
+                        <div class="col-12">
+                            <h5>Скачать отрывок книги для чтения</h5>
+                        </div>
+                        <litres-fragment-download
+                                book-id="{{ book.id }}"
+                                author="{{ book.get_author }}"
+                                name="{{ book.title }}"
+                                :litres-id="{{ book.litres_id }}"
+                                isbn="{{ book.isbn }}"
+                        ></litres-fragment-download>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <div class="la__book_description">
+                                <ul class="la__top_set">
+                                    <li class="la__top_set__header">Описание</li>
+                                    <li id="la__vue_read_more" itemprop="description">
+                                        {{ book.description | safe }}
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    {% if series_books %}
+                        <div class="row">
+                            <div class="col">
+                                <div class="la__book_posts" id="series_books">
+                                    <ul class="la__top_set">
+                                        <li class="la__top_set__header">Все книги серии</li>
+                                    </ul>
+                                    {% for series_book in series_books %}
+                                        <div class="row libs__book_light">
+                                            <div class="col-1 libs__numer">{{ forloop.counter }}</div>
+                                            <div class="col-8">
+                                                <div class="row">
+                                                    <div class="col-12">
+                                                        <a href="{{ series_book.url }}">{{ series_book.title }}</a>
+                                                    </div>
+                                                    <div class="col-12 libs__book_genres">Жанры: {{ series_book.genres | safe }}</div>
+                                                </div>
+                                            </div>
+                                            <div class="col-3 libs__rating">
+                                                <star-rating
+                                                        v-bind:increment="1" :round-start-rating="false"
+                                                        v-bind:max-rating="5"
+                                                        inactive-color="#ccc"
+                                                        active-color="#45a6f3"
+                                                        v-bind:star-size="15"
+                                                        :read-only="false"
+                                                        :rating="{{ series_book.rating | unlocalize }}"
+                                                        @rating-selected="setBookRating($event, {{ series_book.id }})"
+                                                >
+                                                </star-rating>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                    {% if posts %}
+                        <div class="row">
+                            <div class="col">
+                                <div class="la__book_posts">
+                                    <ul class="la__top_set">
+                                        <li class="la__top_set__header">Посты о книге</li>
+                                    </ul>
+                                    <div class="la__book_posts">
+                                        {% post_inline posts %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                    <div class="row libs__comments" id="libs-comments">
+                        <div class="col">
+                            <div class="la__book_description">
+                                <libs-comments
+                                        :book-id="{{ book.id }}"
+                                        book-name="{{ book.title }}"
+                                ></libs-comments>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-lg-2">
+                    {% for genre in book.get_link_genres_collection %}
+                        {% if genre.id == 22 %}
+                            <div class="la__book_series">
+                                <ul class="la__top_set">
+                                    <script type="text/javascript" src="https://vk.com/js/api/openapi.js?159"></script>
+                                    <div id="vk_groups"></div>
+                                    <script type="text/javascript">
+                                        VK.Widgets.Group("vk_groups", {mode: 4, no_cover: 1, height: "400"}, 169943927);
+                                    </script>
+                                </ul>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                    {% if author_books %}
+                        <div class="la__book_series">
+                            <ul class="la__top_set">
+                                <li class="la__top_set__header">Другие книги автора</li>
+                                {% for author_book in author_books %}
+                                    <li>
+                                        <a href="{{ author_book.url }}">{{ author_book.title }}</a>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    {% endif %}
+                    {% if related_books %}
+                        <div class="la__book_series">
+                            <ul class="la__top_set">
+                                <li class="la__top_set__header">Лучшие подобные книги</li>
+                                {% for related_book in related_books %}
+                                    <li>
+                                        <a href="{{ related_book.url }}">{{ related_book.title }}</a>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="readFragment" tabindex="-1" role="dialog" aria-labelledby="readFragment" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLongTitle">Читать фрагмент книги: {{ name }}</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <iframe id="litres_fragment_link" src="#" scrolling="no" frameborder="0" height="480" width="100%"></iframe>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block script_footer %}
+    {% render_bundle 'book-detail' %}
+{% endblock %}

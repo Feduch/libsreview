@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% load static cache %}
+{% block title %}Жанры книг{% endblock %}
+{% block description %}Полный список всех жанров, в каждом жанре удобная сортировка по рейтингу или дате или названию.{% endblock %}
+{% block keywords %}жанры, жанры книг{% endblock %}
+{% block script_style %}
+    <link href="{% static 'genres/css/genres.css' %}" rel="stylesheet">
+{% endblock %}
+{% block breadcrumb %}<a href="/">Главная</a> / Жанры{% endblock %}
+{% block content %}
+    {% cache 86400 la__genre %}
+    <div class="row">
+        <div class="col">
+            <div class="row la__genre">
+                {% for parent_genre in parent_genres %}
+                    <div class="col-12">
+                        <h2>{{ parent_genre.name }}</h2>
+                    </div>
+                        {% for genre in genres %}
+                            {% if genre.parent == parent_genre %}
+                                <div class="col-md-6 col-md-3 col-lg-3">
+                                    <div class="la__genre_title">
+                                        <a href="{{ genre.get_absolute_url }}">{{ genre.name }}</a>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% endcache %}
+{% endblock %}

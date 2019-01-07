@@ -1,0 +1,3 @@
+User-agent: *
+Host: https://libs.ru/
+Sitemap: https://libs.ru/sitemap.xml

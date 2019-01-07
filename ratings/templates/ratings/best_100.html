@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% load books_inline cache %}
+{% load render_bundle from webpack_loader %}
+{% load static %}
+{% block title %}Сто лучших книг - описания, отзывы, рейтинг, фото и авторы, с возможностью покупки и скачивания.{% endblock %}
+{% block description %}Рейтинг 100 лучших книг за все времена по версии Libs.ru с рейтингами, голосованиями и возможностью написания отзывов и рецензий, со ссылками на покупку и скачивание.{% endblock %}
+{% block page_title %}100 лучших книг{% endblock %}
+{% block page_title_small %}100 лучших книг{% endblock %}
+{% block meta %}
+    <meta property="og:title" content="100 лучших книг по версии Libs.ru" />
+    <meta property="og:image" content="https://libs.ru/media/cache/c7/99/c7993a628c6611d0f9ebf83092b5cb61.jpg" />
+    <meta property="og:description" content="Рейтинг 100 лучших книг за все времена по версии Libs.ru с рейтингами, голосованиями и возможностью написания отзывов и рецензий, со ссылками на покупку и скачивание." />
+{% endblock %}
+{% block breadcrumb %}<a href="/">Главная</a> / <a href="/ratings/">Рейтинги</a> / 100 лучших книг {% endblock %}
+{% block content %}
+    {% cache 86400 best_1002 %}
+        <div class="row">
+            <div class="col-12 col-lg-8">
+                <div class="card libs__book">
+                    <div class="card-body">
+                        В этом рейтинге собраны 100 лучших книг по рейтингу читателей. Рейтинг строится исходя из количества оценок, количества просмотров,
+                        отзывов, рецензий и статей.<br>
+                        Рекомендуем - для точного выбора используйте навигатор, там можно отобрать книги по жанрам за выбранные года с нужной вам сортировкой.
+                        <a href="/nav/">Перейти в навигатор</a>.
+                    </div>
+                </div>
+                <div class="row la__books" id="libs-rating-books">
+                    {% books_inline books %}
+                </div>
+            </div>
+            <div class="col-12 col-lg-4">{% include "ratings_block_right.html" %}</div>
+        </div>
+        {% include "ratings_block_bottom.html" %}
+    {% endcache %}
+{% endblock %}
+{% block script_footer %}
+    {% render_bundle 'ratings' %}
+{% endblock %}

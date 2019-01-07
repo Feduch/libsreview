@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% load books_inline cache %}
+{% load render_bundle from webpack_loader %}
+{% load static %}
+{% block title %}Лучшие книги читать онлайн бесплатно.{% endblock %}
+{% block description %}Все книги можно сразу читать онлайн и, если они понравились, сразу купить. У каждой книги есть рейтинг, жанр, навигация и аннотация.{% endblock %}
+{% block page_title %}Лучшие книги читать онлайн бесплатно{% endblock %}
+{% block page_title_small %}Лучшие книги читать онлайн бесплатно{% endblock %}
+{% block breadcrumb %}<a href="/">Главная</a> / <a href="/ratings/">Рейтинги</a> / Лучшие книги читать онлайн бесплатно {% endblock %}
+{% block content %}
+    {% cache 86400 best_online %}
+        <div class="row">
+            <div class="col-12 col-lg-8">
+                <div class="row la__books" id="libs-rating-books">
+                    {% books_inline books %}
+                </div>
+            </div>
+            <div class="col-12 col-lg-4">{% include "ratings_block_right.html" %}</div>
+        </div>
+        {% include "ratings_block_bottom.html" %}
+    {% endcache %}
+{% endblock %}
+{% block script_footer %}
+    {% render_bundle 'ratings' %}
+{% endblock %}

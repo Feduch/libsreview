@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+{% load static authors_inline cache %}
+{% load render_bundle from webpack_loader %}
+{% block title %}Авторы{% endblock %}
+{% block description %}
+    Все авторы и книги мира, лучшие книги, лучшие авторы, онлайн общение с авторами, онлайн написание книг
+{% endblock %}
+{% block page_title %}Все авторы{% endblock %}
+{% block page_title_small %}Все авторы{% endblock %}
+{% block breadcrumb %}<a href="/">Главная</a> / Авторы {% endblock %}
+{% block content %}
+    {% cache 500 authors_list page %}
+    <div class="row" id="vue-authors-list">
+        <div class="col-12 col-lg-8">
+            <div class="row">
+                <div class="col-12">
+                    Всего авторов на сайте - {{ count }}
+                </div>
+                <div class="col-12 d-none d-md-block">
+                    <p>
+                        <span class="badge badge-info">Совет!</span><br />
+                        Чтобы выбрать лучших авторов в нужном жанре, зайдите в <a href="/nav/">книжный навигатор</a>.
+                        Навигатор поможет определить жанр книги, год ее публикации или диапазон годов, а также
+                        сортирует книги по рейтингу, количеству просмотров и по алфавиту.
+                    </p>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12">
+                    <author-filter></author-filter>
+                </div>
+            </div>
+            <div id="libs__authors">
+                <div class="libs__authors">
+                    {% authors_inline authors %}
+                </div>
+
+                {% if authors.has_other_pages %}
+                    <nav aria-label="Авторы">
+                        <ul class="pagination">
+                            <li class="page-item">
+                                {% if authors.has_previous %}
+                                    <a class="page-link" href="?page={{ authors.previous_page_number }}" aria-label="Назад">
+                                        <span aria-hidden="true">&laquo;</span>
+                                        <span class="sr-only">Назад</span>
+                                    </a>
+                                {% endif %}
+                            </li>
+                            {% for object in authors.paginator.page_range %}
+                                {% if forloop.counter < 10 %}
+                                    {% if authors.number ==  forloop.counter %}
+                                        <li class="page-item active"><a class="page-link" href="?page={{ forloop.counter }}">{{ authors.number }}</a></li>
+                                    {% else %}
+                                        <li class="page-item"><a class="page-link" href="?page={{ forloop.counter }}">{{ forloop.counter }}</a></li>
+                                    {% endif %}
+                                {% endif %}
+                            {% endfor %}
+                            <li class="page-item">
+                                {% if authors.has_next %}
+                                    <a class="page-link" href="?page={{ authors.next_page_number }}" aria-label="Вперед">
+                                        <span aria-hidden="true">&raquo;</span>
+                                        <span class="sr-only">Вперед</span>
+                                    </a>
+                                {% endif %}
+                            </li>
+                        </ul>
+                    </nav>
+                {% endif %}
+            </div>
+        </div>
+        <div class="col-12 col-lg-4">
+            {% include "ratings_block_right.html" %}
+        </div>
+    </div>
+    {% endcache %}
+{% endblock %}
+{% block script_footer %}
+    {% render_bundle 'authors' %}
+{% endblock %}

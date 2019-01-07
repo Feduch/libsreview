@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% load books_inline cache %}
+{% load render_bundle from webpack_loader %}
+{% load static %}
+{% block title %}Лучшие и новые книги {{ year }} года - полный перечень, голосования, обзоры и рецензии.{% endblock %}
+{% block description %}Перечень лучших книг {{ year }} года, новые книги - авторы, оценки, обсуждения, рецензии.{% endblock %}
+{% block page_title %}Лучшие и новые книги {{ year }} года{% endblock %}
+{% block page_title_small %}Лучшие и новые книги {{ year }} года{% endblock %}
+{% block breadcrumb %}<a href="/">Главная</a> / <a href="/ratings/">Рейтинги</a> / Лучшие и новые книги {{ year }} года{% endblock %}
+{% block content %}
+    {% cache 86400 best_year2 year %}
+        <div class="row">
+            <div class="col-12 col-lg-8">
+                <div class="card libs__book">
+                    <div class="card-body">
+                        На этой странице отобраны 100 самых популярных книг за {{ year }} год.<br>
+                        Рейтинг строится на основании ваших оценок, количестве комментариев и статей о книге.<br>
+                        Если вы хотите отобрать лучшие книги за год в определенном жанре, то <a href="/nav/">используйте навигатор</a>,
+                        там можно отобрать книги по жанрам за год с нужной вам сортировкой.<br>
+                    </div>
+                </div>
+                <div class="row la__books" id="libs-rating-books">
+                    {% books_inline books %}
+                </div>
+            </div>
+            <div class="col-12 col-lg-4">{% include "ratings_block_right.html" %}</div>
+        </div>
+        {% include "ratings_block_bottom.html" %}
+    {% endcache %}
+{% endblock %}
+{% block script_footer %}
+    {% render_bundle 'ratings' %}
+{% endblock %}

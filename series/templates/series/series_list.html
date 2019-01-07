@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+{% load static series_inline %}
+{% block title %}Серии книг{% endblock %}
+{% block description %}Серии книг на сайте Libs.ru{% endblock %}
+{% block keywords %}Серии книг{% endblock %}
+{% block page_title %}Все серии{% endblock %}
+{% block page_title_small %}Все серии{% endblock %}
+{% block breadcrumb %}<a href="/">Главная</a>/ <a href="/book/">Книги</a> / Серии книг{% endblock %}
+{% block content %}
+    <div class="row">
+        <div class="col-12 col-lg-8">
+            <div id="libs__books">
+                <div class="libs__books">
+                    {% series_inline series %}
+                </div>
+
+                {% if is_paginated %}
+                    <nav aria-label="Серии">
+                        <ul class="pagination">
+                            <li class="page-item">
+                                {% if page_obj.has_previous %}
+                                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}" aria-label="Назад">
+                                        <span aria-hidden="true">&laquo;</span>
+                                        <span class="sr-only">Назад</span>
+                                    </a>
+                                {% endif %}
+                            </li>
+                            {% for object in page_obj.paginator.page_range %}
+                                {% if forloop.counter < 10 %}
+                                    {% if page_obj.number ==  forloop.counter %}
+                                        <li class="page-item active"><a class="page-link" href="?page={{ forloop.counter }}">{{ page_obj.number }}</a></li>
+                                    {% else %}
+                                        <li class="page-item"><a class="page-link" href="?page={{ forloop.counter }}">{{ forloop.counter }}</a></li>
+                                    {% endif %}
+                                {% endif %}
+                            {% endfor %}
+                            <li class="page-item">
+                                {% if page_obj.has_next %}
+
+                                    <a class="page-link" href="?page={{ page_obj.next_page_number }}" aria-label="Вперед">
+                                        <span aria-hidden="true">&raquo;</span>
+                                        <span class="sr-only">Вперед</span>
+                                    </a>
+                                {% endif %}
+
+                            </li>
+                        </ul>
+                    </nav>
+                {% endif %}
+            </div>
+        </div>
+        <div class="col-12 col-lg-4">
+            {% include "ratings_block_right.html" %}
+        </div>
+    </div>
+{% endblock %}

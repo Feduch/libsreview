@@ -1,0 +1,107 @@
+{% extends 'base.html' %}
+{% load render_bundle from webpack_loader %}
+{% load static cache books_inline %}
+{% block title %}{{ genre.name }} - список лучших книг.{% endblock %}
+{% block description %}Все все книги жанра отсортированные по рейтингу, что позволяет быстро найти лучшие книги, которые стоит прочитать.{% endblock %}
+{% block meta %}
+    <meta itemprop="name" content="{{ genre.name }} - список лучших книг."/>
+    <meta itemprop="headline" content="{{ genre.name }} - список лучших книг."/>
+    <meta itemprop="description" content="Все все книги жанра отсортированные по рейтингу, что позволяет быстро найти лучшие книги, которые стоит прочитать."/>
+    <meta itemprop="image" content="{{ image }}"/>
+    <meta property="og:image" content="{{ image }}"/>
+{% endblock %}
+
+{% block script_style %}
+    <link href="{% static 'genres/css/genres.css' %}" rel="stylesheet">
+{% endblock %}
+{% block page_title %}
+    {% if year %}
+        Жанр {{ genre.name }} за {{ year }} год
+    {% else %}
+        Жанр {{ genre.name }}
+    {% endif %}
+{% endblock %}
+{% block breadcrumb %}
+    {% if year %}
+        <a href="/">Главная</a> / <a href="/genre/">Жанры</a> / <a href="{{ genre.get_absolute_url }}">{{ genre.name }}</a> / {{ year }}
+    {% else %}
+        <a href="/">Главная</a> / <a href="/genre/">Жанры</a> / {{ genre.name }}
+    {% endif %}
+{% endblock %}
+{% block content %}
+    <div class="row">
+        <div class="col-12 col-lg-8" id="vue-genre-detail">
+            <div class="row la__genre_books_filter">
+                <genre-filter
+                        :genre-id="{{ genre.id }}"
+                ></genre-filter>
+            </div>
+            <div class="row" id="libs__books">
+                <div class="libs__books">
+                    {% books_inline books %}
+                </div>
+                {% if books.has_other_pages %}
+                    <nav aria-label="Книги">
+                        <ul class="pagination">
+                            <li class="page-item">
+                                {% if books.has_previous %}
+                                    <a class="page-link" href="?page={{ books.previous_page_number }}" aria-label="Назад">
+                                        <span aria-hidden="true">&laquo;</span>
+                                        <span class="sr-only">Назад</span>
+                                    </a>
+                                {% endif %}
+                            </li>
+                            {% for object in books.paginator.page_range %}
+                                {% if forloop.counter < 10 %}
+                                    {% if books.number ==  forloop.counter %}
+                                        <li class="page-item active"><a class="page-link" href="?page={{ forloop.counter }}">{{ books.number }}</a></li>
+                                    {% else %}
+                                        <li class="page-item"><a class="page-link" href="?page={{ forloop.counter }}">{{ forloop.counter }}</a></li>
+                                    {% endif %}
+                                {% endif %}
+                            {% endfor %}
+                            <li class="page-item">
+                                {% if books.has_next %}
+                                    <a class="page-link" href="?page={{ books.next_page_number }}" aria-label="Вперед">
+                                        <span aria-hidden="true">&raquo;</span>
+                                        <span class="sr-only">Вперед</span>
+                                    </a>
+                                {% endif %}
+                            </li>
+                        </ul>
+                    </nav>
+                {% endif %}
+            </div>
+        </div>
+        {% cache 86400 libsgenresrelated genre.id %}
+        <div class="col-12 col-lg-4">
+            {% if genre.id == 22 %}
+            <div class="row la__genres_related">
+                <div class="col">
+                    <script type="text/javascript" src="https://vk.com/js/api/openapi.js?159"></script>
+                    <div id="vk_groups"></div>
+                    <script type="text/javascript">
+                    VK.Widgets.Group("vk_groups", {mode: 4, wide: 1, no_cover: 1, height: "400"}, 169943927);
+                    </script>
+                </div>
+            </div>
+            {% endif %}
+            <div class="row la__genres_related">
+                <div class="col">
+                    <h3>Похожие жанры</h3>
+                </div>
+                <div class="col-12">
+                    {% for genre in genres %}
+                        <div><a href="{{ genre.get_absolute_url }}">{{ genre.name }}</a></div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            {% include "ratings_block_right.html" %}
+        </div>
+        {% endcache %}
+    </div>
+{% endblock %}
+{% block script_footer %}
+    {% render_bundle 'genre-detail' %}
+{% endblock %}

@@ -1,0 +1,40 @@
+{% load static %}
+{% for book in books %}
+    <div class="col-3 libs__book">
+        <div class="col-12">
+            <a href="{{ book.get_absolute_url }}"
+               class="book-popover"
+               tabindex="0"
+               data-toggle="popover"
+               title="{{ book.title }}"
+               data-content="Автор(ы): {{ book.get_link_authors }}<br />{% if book.year %}Год: {{ book.year }}{% endif %}"
+            >
+                {% if book.image %}
+                <img
+                    src="{{ book.image }}"
+                    title="{{ book.title }}"
+                    class="img-thumbnail"
+                />
+                {% else %}
+                <img
+                    src="{% static 'images/no_book_cover.png' %}"
+                    title="{{ book.title }}"
+                    class="img-thumbnail"
+                />
+                {% endif %}
+            </a>
+        </div>
+        <div class="col-12 libs__series_book_rating">
+            <star-rating
+                    v-bind:increment="1" :round-start-rating="false"
+                    v-bind:max-rating="5"
+                    inactive-color="#ccc"
+                    active-color="#45a6f3"
+                    v-bind:star-size="15"
+                    :read-only="false"
+                    :rating="{{ book.rating }}"
+            >
+            </star-rating>
+        </div>
+    </div>
+{% endfor %}

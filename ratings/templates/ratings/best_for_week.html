@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% load books_inline cache %}
+{% load render_bundle from webpack_loader %}
+{% load static %}
+{% block title %}Лучшие книги недели{% endblock %}
+{% block description %}Лучшие книги недели{% endblock %}
+{% block page_title %}Лучшие книги недели{% endblock %}
+{% block page_title_small %}Лучшие книги недели{% endblock %}
+{% block breadcrumb %}<a href="/">Главная</a> / <a href="/ratings/">Рейтинги</a> / Лучшие книги недели {% endblock %}
+{% block content %}
+    {% cache 3600 best_for_week %}
+<div class="row">
+    <div class="col-12 col-lg-8">
+        <div class="card libs__book">
+            <div class="card-body">
+                Здесь отображаются книги вызывавшие наибольший читателей в течение последних семи дней. Интерес рассчитывается по количеству просмотров, оценок,
+                отзывов и статей связанных с книгой.<br>
+                Также вы можете посмотреть обзоры за более короткие и более длинные периоды -
+                <a href="/best-month/">лучшие книги месяца</a> или <a href="/best-today/">дня</a>.
+            </div>
+        </div>
+        <div class="row la__books" id="libs-rating-books">
+            {% books_inline books %}
+        </div>
+    </div>
+    <div class="col-12 col-lg-4">
+        {% include "ratings_block_right.html" %}
+    </div>
+</div>
+    {% include "ratings_block_bottom.html" %}
+    {% endcache %}
+{% endblock %}
+{% block script_footer %}
+    {% render_bundle 'ratings' %}
+{% endblock %}

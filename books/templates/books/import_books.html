@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% load render_bundle from webpack_loader %}
+{% block title %}Новые книги{% endblock %}
+{% block description %}Новые книги{% endblock %}
+{% block page_title %}Новые книги{% endblock %}
+{% block breadcrumb %}<a href="/">Главная</a> / <a href="/book/">Книги</a> / Новые книги{% endblock %}
+{% block content %}
+    <div class="row">
+        <div class="col-12">
+            <book-import></book-import>
+        </div>
+    </div>
+{% endblock %}
+{% block script_footer %}
+    {% render_bundle 'books-admin' %}
+{% endblock %}

@@ -1,0 +1,61 @@
+{% load cache %}
+<div class="jumbotron d-none d-md-block">
+    <div class="container">
+        <div class="row la__top_sets">
+            <div class="col-12">
+                <ul class="la__top_set">
+                    <li class="la__top_set__header">ЧТО ПОЧИТАТЬ</li>
+                    <li id="vue-small-navigator-right">
+                        <small-navigator></small-navigator>
+                    </li>
+                </ul>
+            </div>
+            <div class="col-12">
+                <ul class="la__top_set">
+                    <li class="la__top_set__header">ТЕНДЕНЦИИ</li>
+                    <li>
+                        <a href="{% url 'rating-best-today' %}">Лучшие книги дня</a>
+                    </li>
+                    <li>
+                        <a href="{% url 'rating-best-week' %}">Лучшие книги недели</a>
+                    </li>
+                    <li>
+                        <a href="{% url 'rating-best-month' %}">Лучшие книги месяца</a>
+                    </li>
+                </ul>
+            </div>
+            <div class="col-12">
+                <ul class="la__top_set">
+                    <li class="la__top_set__header">ЛУЧШИЕ КНИГИ</li>
+                    <li>
+                        <a href="{% url 'rating-best-100' %}">100 лучших книг мира</a>
+                    </li>
+                    <li>
+                        <a href="{% url 'rating-best-russian' %}">100 лучших книг русских авторов</a>
+                    </li>
+                    <li>
+                        <a href="{% url 'rating-best-year' 2018 %}">Лучшие книги 2018</a>
+                    </li>
+                    <li>
+                        <a href="{% url 'rating-best-year' 2017 %}">Лучшие книги 2017</a>
+                    </li>
+                    <li>
+                        <a href="{% url 'genre-list' %}">Список жанров</a>
+                    </li>
+                </ul>
+            </div>
+            {% cache 86400 ratings_block_right_collection %}
+            <div class="col-12">
+                <ul class="la__top_set">
+                    <li class="la__top_set__header">КОЛЛЕКЦИИ</li>
+                    {% for collection in last_collections %}
+                        <li>
+                            <a href="{{ collection.get_absolute_url }}">{{ collection.title }}</a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endcache %}
+        </div>
+    </div>
+</div>

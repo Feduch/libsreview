@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% load render_bundle from webpack_loader %}
+{% block title %}Добавить книгу{% endblock %}
+{% block description %}Добавить книгу{% endblock %}
+{% block page_title %}Добавить книгу{% endblock %}
+{% block page_title_small %}Добавить книгу{% endblock %}
+{% block breadcrumb %}<a href="/">Главная</a> / <a href="/book/">Книги</a> / Добавить книгу{% endblock %}
+{% block content %}
+    <div class="row">
+        <div class="col-12">
+            <div class="row">
+                <div class="col-8">
+                    <book-editor
+                        :book-id="{{ id }}"
+                    ></book-editor>
+                </div>
+                <div class="col-4">
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block script_footer %}
+    {% render_bundle 'books-admin' %}
+{% endblock %}

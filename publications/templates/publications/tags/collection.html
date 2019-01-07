@@ -1,0 +1,28 @@
+{% load static %}
+<div class="card libs__card">
+    <div class="card-body">
+        <h5 class="card-title"><a href="{{ collection.get_absolute_url }}">{{ collection.title | safe }}</a></h5>
+        <div class="row">
+            <div class="col-12">
+                <span class="badge badge-info">Коллекция</span>
+            </div>
+            <div class="col-5">
+                <a href="{{ collection.get_absolute_url }}">
+                <img
+                        src="{{ collection.image.url }}"
+                        alt="{{ collection.title }}"
+                        class="figure-img img-fluid"
+                />
+                    </a>
+            </div>
+        </div>
+        <p class="card-text">
+            {{ collection.description | striptags | truncatechars:80 }}
+        </p>
+        <a href="{{ collection.get_absolute_url }}" class="btn btn-primary">Читать дальше</a>
+    </div>
+    <div class="card-footer text-muted">
+        <span title="Просмотры"><img src="{% static 'images/eye.png' %}" alt="Количество просмотров"> {{ collection.show_counter }}</span>
+        Автор {{ collection.user }}, дата {{ collection.date_create }}
+    </div>
+</div>

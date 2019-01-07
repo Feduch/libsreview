@@ -1,0 +1,13 @@
+.idea
+/node_modules
+*.pyc
+media
+migrations
+/static
+local_settings.py
+db.png
+README.md
+*/fixtures/test_*.json
+.gitconfig
+celerybeat-schedule.db
+debug.log

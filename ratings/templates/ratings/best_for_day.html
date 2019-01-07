@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% load books_inline cache %}
+{% load render_bundle from webpack_loader %}
+{% load static %}
+{% block title %}Лучшие книги дня{% endblock %}
+{% block description %}Отбор по рейтингу читателей и Libs.ru - гибкая сортировка, поиск по авторам.{% endblock %}
+{% block page_title %}Лучшие книги дня{% endblock %}
+{% block page_title_small %}Лучшие книги дня{% endblock %}
+{% block breadcrumb %}<a href="/">Главная</a> / <a href="/ratings/">Рейтинги</a> / Лучшие книги дня {% endblock %}
+{% block content %}
+    {% cache 3600 best_for_today_last_7 %}
+    <div class="row">
+        <div class="col-12 col-lg-8">
+            <div class="card libs__book">
+                <div class="card-body">
+                    Здесь отображаются книги вызвавшие наибольший читателей за последние 24 часа. На этой странице вы всегда можете посмотреть самые
+                    свежие книги которые растут в рейтинге.<br>
+                    Для более укрупненного отбора вы также можете воспользоваться подборками
+                    <a href="/best-week/">лучшие книги недели</a> или <a href="/best-month/">месяца</a>.
+                </div>
+            </div>
+            <div class="row la__books" id="libs-rating-books">
+                {% books_inline books %}
+            </div>
+        </div>
+        <div class="col-12 col-lg-4">
+            {% include "ratings_block_right.html" %}
+        </div>
+    </div>
+    {% include "ratings_block_bottom.html" %}
+    {% endcache %}
+{% endblock %}
+{% block script_footer %}
+    {% render_bundle 'ratings' %}
+{% endblock %}

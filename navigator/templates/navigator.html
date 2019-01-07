@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% load static books_inline %}
+{% load render_bundle from webpack_loader %}
+{% block title %}Книжный навигатор - поиск и подбор лучших книг{% endblock %}
+{% block description %}Книжный навигатор - поиск и подбор лучших книг{% endblock %}
+{% block keywords %}лучшие авторы, лучшие книги, поиск, подбор{% endblock %}
+{% block page_title %}Книжный навигатор - поиск и подбор лучших книг{% endblock %}
+{% block page_title_small %}Книжный навигатор - поиск и подбор лучших книг{% endblock %}
+{% block breadcrumb %}<a href="/">Главная</a> / Навигатор{% endblock %}
+{% block content %}
+    <div class="row">
+        <div class="col-12">
+            <div class="row">
+                <div class="col-12 col-lg-8" id="vue-books-navigator">
+                    <navigator
+                        :genre-id-in="{{ genre }}"
+                        start-year-in="{{ start_year }}"
+                        end-year-in="{{ end_year }}"
+                        year-in="{{ year }}"
+                    ></navigator>
+                </div>
+                <div class="col-12 col-lg-4">
+                    {% include "ratings_block_right.html" %}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block script_footer %}
+    {% render_bundle 'navigator' %}
+{% endblock %}

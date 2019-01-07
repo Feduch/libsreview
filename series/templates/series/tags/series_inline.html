@@ -1,0 +1,59 @@
+{% load static series_authors series_genres series_count_books l10n %}
+{% for item in series %}
+    <div class="card libs__series">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-lg-2 col-md-2 col-sm-2 col-xs-12">
+                    <div class="product-wrapper-2">
+                        <div class="product-img">
+                            <a href="{{ item.get_absolute_url }}">
+                                {% if item.image %}
+                                    <img
+                                            src="{{ item.image }}"
+                                            title="{{ item.title }}"
+                                            class="figure-img img-fluid"
+                                    />
+                                {% else %}
+                                    <img
+                                            src="{% static 'images/no_book_cover.png' %}"
+                                            title="{{ item.title }}"
+                                            class="figure-img img-fluid"
+                                    />
+                                {% endif %}
+                            </a>
+                        </div>
+                        <div class="libs__rating">
+                            <star-rating
+                                    v-bind:increment="1" :round-start-rating="false"
+                                    v-bind:max-rating="5"
+                                    inactive-color="#ccc"
+                                    active-color="#45a6f3"
+                                    v-bind:star-size="15"
+                                    :read-only="false"
+                                    :rating="{{ item.rating | unlocalize }}"
+                            >
+                            </star-rating>
+                        </div>
+                        <div class="libs__views">
+                            <span title="Просмотры">{{ item.show_counter }}</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-10 col-md-10 col-sm-10 col-xs-12">
+                    <div class="libs__book_title">
+                        Серия: <a href="{{ item.get_absolute_url }}">{{ item.title }}</a>
+                    </div>
+                    <div class="libs__series_author">
+                        Автор(ы): {{ item.id | series_authors | safe }}
+                    </div>
+                    <div class="libs__series_genres">
+                        Жанр(ы): {{ item.id | series_genres | safe }}
+                    </div>
+                    <div class="libs__series_year">
+                        Количество книг в серии: {{ item.id | series_count_books }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endfor %}

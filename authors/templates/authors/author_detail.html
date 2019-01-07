@@ -1,0 +1,198 @@
+{% extends 'base.html' %}
+{% load l10n static books %}
+{% load render_bundle from webpack_loader %}
+{% block title %}{{ author }} скачать книги fb2, epub{% endblock %}
+{% block description %}{{ seo_description | truncatechars:300 }}{% endblock %}
+{% block script_style %}
+    <meta property="og:title" content="{{ author }}"/>
+    <meta property="og:url" content="https://libs.ru/a/{{ author.id }}/"/>
+    <meta property="og:type" content="article"/>
+    <meta property="og:description" content="{{ author.description | safe | striptags | truncatechars:300 }}"/>
+    <meta property="og:image" content="{{ author.photo }}"/>
+    <meta property="article:published_time" content="{{ author.date_create }}"/>
+    <meta property="article:modified_time" content="{{ author.date_update }}" />
+    <meta property="og:updated_time" content="{{ author.date_update }}" />
+    <meta property="article:section" content="{{ author }}"/>
+    <meta itemprop="name" content="{{ author }}"/>
+    <meta itemprop="description" content="{{ seo_description | truncatechars:300 }}"/>
+    <meta itemprop="image" content="{{ author.get_photo }}"/>
+{% endblock %}
+{% block breadcrumb %}<a href="/">Главная</a> / <a href="/a/">Авторы</a> / {{ author }} {% endblock %}
+{% block page_title %}{{ author.name }} - список книг{% endblock %}
+{% block page_title_small %}{{ author.name }} - список книг{% endblock %}
+{% block content %}
+    <div class="row" id="vue-author-detail">
+        <div class="col">
+            <div class="row">
+                <div class="col-12 col-md-2 col-lg-2">
+                    <div class="la__author_cover">
+                        <img src="{{ author.get_photo }}" title="{{ author }}" class="figure-img img-fluid" />
+                    </div>
+                </div>
+                <div class="col-12 col-md-10 col-lg-8">
+                    <div class="row">
+                        <div class="col-6">
+                            <ul class="la__top_set">
+                                <li class="la__top_set__header">Об авторе</li>
+                                <li>
+                                    <div class="la__author_author">
+                                        <strong>Страна:</strong>
+                                        {{ author.country.name }}
+                                    </div>
+                                    {% if author.birthday %}
+                                        <div class="la__author_series">
+                                            <strong>дата рождения:</strong>
+                                            {{ author.birthday }}
+                                        </div>
+                                    {% endif %}
+                                    {% if author.death %}
+                                        <div class="la__author_series">
+                                            <strong>дата смерти:</strong>
+                                            {{ author.death }}
+                                        </div>
+                                    {% endif %}
+                                    <div class="la__author_genre">
+                                        <strong>Жанр(ы):</strong>
+                                        {{ author.get_link_genres | safe }}
+                                    </div>
+                                    {% if author.count_book %}
+                                        <div class="la__author_series">
+                                            <strong>Всего книг:</strong>
+                                            {{ author.count_book }}
+                                        </div>
+                                    {% endif %}
+                                    <div class="la__author_series">
+                                        <a href="#about">Информация об авторе</a>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="col-6">
+                            <ul class="la__top_set">
+                                <li class="la__top_set__header">Рейтинг</li>
+                                <li class="libs__book_rating">
+                                    <star-rating
+                                            v-bind:increment="1" :round-start-rating="false"
+                                            v-bind:max-rating="5"
+                                            inactive-color="#ccc"
+                                            active-color="#45a6f3"
+                                            v-bind:star-size="25"
+                                            :read-only="false"
+                                            :rating="{{ author.rating | unlocalize }}"
+                                            @rating-selected="setAuthorRating($event, {{ author.id }})"
+                                    >
+                                    </star-rating>
+                                </li>
+                                <li class="libs__book_rating_info">
+                                    <div class="row">
+                                        <div class="col-12 col-lg-6">просмотров - {{ author.show_counter }}</div>
+                                        <div class="col-12 col-lg-6">статей - {{ count_posts }}</div>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <ul class="la__top_set">
+                                <li class="la__top_set__header">Список книг</li>
+                            </ul>
+                            <author-books-filter
+                                    author-id="{{ author.id }}"
+                                    :genres-ids="{{ genres }}"
+                            ></author-books-filter>
+                            <div class="row libs__author_books">
+                                {% for series_id, item in series.items %}
+                                    <div class="col-12">
+                                        {% if series_id %}
+                                            Серия <a href="/book/series/{{ series_id }}.html">{{ item.title }}</a>
+                                        {% else %}
+                                            Книги без серии
+                                        {% endif %}
+                                    </div>
+                                    <div class="col-12">
+                                        {% for book in item.books %}
+                                            <div class="row libs__book_light">
+                                                <div class="col-1 libs__numer">{{ book.index }}</div>
+                                                <div class="col-7">
+                                                    <div class="row">
+                                                        <div class="col-12">
+                                                            <a href="/book/{{ book.id }}/">{{ book.title }} {% if book.year %}({{ book.year }}){% endif %}</a>
+                                                        </div>
+                                                        <div class="col-12 libs__book_genres">
+                                                            Жанры:
+                                                            {% for genre in book.genres %}
+                                                                <a href="/genre/{{ genre.slug }}/">{{ genre.name }}</a>
+                                                                {% if not forloop.last %},{% endif %}
+                                                            {% endfor %}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-3 libs__rating">
+                                                    <star-rating
+                                                            v-bind:increment="1" :round-start-rating="false"
+                                                            v-bind:max-rating="5"
+                                                            inactive-color="#ccc"
+                                                            active-color="#45a6f3"
+                                                            v-bind:star-size="15"
+                                                            :read-only="false"
+                                                            :rating="{{ book.rating | unlocalize  }}"
+                                                            @rating-selected="setBookRating($event, {{ book.id }})"
+                                                    >
+                                                    </star-rating>
+                                                </div>
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <div class="la__author_description">
+                                <ul class="la__top_set">
+                                    <li class="la__top_set__header">Об авторе <a name="about"></a></li>
+                                    <li id="la__vue_read_more">
+                                        {{ author.description | safe }}
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-lg-2">
+                    <div class="la__author_ratings">
+                        {% if posts %}
+                            <ul class="la__top_set">
+                                <li class="la__top_set__header">Посты об авторе</li>
+                                <li class="la__author_post">
+                                    {% for post in posts %}
+                                        <div class="la__author_post_title">
+                                            <a href="{{ post.get_absolute_url }}">{{ post.title }}</a>
+                                        </div>
+                                    {% endfor %}
+                                </li>
+                            </ul>
+                        {% endif %}
+                        {% if posts_books %}
+                            <ul class="la__top_set">
+                                <li class="la__top_set__header">Посты о книгах автора</li>
+                                <li class="la__author_post">
+                                    {% for post in posts_books %}
+                                        <div class="la__author_post_title">
+                                            <a href="{{ post.get_absolute_url }}">{{ post.title }}</a>
+                                        </div>
+                                    {% endfor %}
+                                </li>
+                            </ul>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block script_footer %}
+    {% render_bundle 'author-detail' %}
+{% endblock %}

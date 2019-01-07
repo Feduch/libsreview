@@ -1,0 +1,21 @@
+{% load static %}
+{% for publication in posts %}
+    <div class="card libs__card" itemprop="review" itemscope itemtype="http://schema.org/Review">
+        <div class="card-body">
+            <h5 class="card-title"><a itemprop="url" href="{{ publication.get_absolute_url }}"><span itemprop="name">{{ publication.title }}</span></a></h5>
+            {% if publication.image %}
+                <p>
+                    <a href="{{ publication.get_absolute_url }}"><img class="img-fluid" src="{{ publication.image.url }}" alt="{{ publication.title }}"></a>
+                </p>
+            {% endif %}
+            <p class="card-text">
+                <span itemprop="description">{{ publication.preview_text | safe }}</span>
+            </p>
+            <a itemprop="url" href="{{ publication.get_absolute_url }}" class="btn btn-primary">Читать дальше</a>
+        </div>
+        <div class="card-footer text-muted">
+            <span title="Просмотры"><img src="{% static 'images/eye.png' %}" alt="Количество просмотров"> {{ publication.show_counter }}</span>
+            Автор поста <span itemprop="author">{{ publication.user }}</span>, дата <span itemprop="dateCreated">{{ publication.date_create }}</span>
+        </div>
+    </div>
+{% endfor %}

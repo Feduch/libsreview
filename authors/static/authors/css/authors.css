@@ -1,0 +1,40 @@
+.la__author_title,
+.la__author_author,
+.la__author_genre,
+.la__author_description {
+    font-size: 12px;
+}
+
+.la__author_title {
+    font-weight: bold;
+}
+
+.la__author_description {
+
+}
+
+.la__author {
+    padding-bottom: 10px;
+}
+
+.la__author_rating {
+    font-size: 12px;
+}
+
+.la__author_rating_count {
+    font-size: 14px;
+}
+
+.la__author_about {
+    line-height: 1.5em;
+    max-height: 150px;
+    overflow: hidden;
+}
+
+.la__book_item {
+    padding-bottom: 5px;
+}
+
+.la__book_rating {
+    font-size: 12px;
+}

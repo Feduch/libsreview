@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% load books_inline %}
+{% load render_bundle from webpack_loader %}
+{% load static %}
+{% block title %}Книжные рейтинги{% endblock %}
+{% block description %}Книжные рейтинги{% endblock %}
+{% block content %}
+    {% include "ratings_block_top.html" %}
+{#    <div class="row">#}
+{#        <div class="col-12 col-lg-8">#}
+{#            <div class="row la__books">#}
+{#                {% books_inline books %}#}
+{#            </div>#}
+{#        </div>#}
+{#        <div class="col-12 col-lg-4">{% include "ratings_block_right.html" %}</div>#}
+{#    </div>#}
+    {% include "ratings_block_bottom.html" %}
+{% endblock %}
+{% block script_footer %}
+    {% render_bundle 'ratings' %}
+{% endblock %}

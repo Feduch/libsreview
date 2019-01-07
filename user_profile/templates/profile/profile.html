@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% load render_bundle from webpack_loader %}
+{% block title %}Личный кабинет{% endblock %}
+{% block page_title %}Личный кабинет{% endblock %}
+{% block page_title_small %}Личный кабинет{% endblock %}
+{% block breadcrumb %}<a href="/">Главная</a> / <a href="/profile/">Личный кабинет</a>{% endblock %}
+{% block content %}
+    <div class="row" id="vue-user-profile">
+        <div class="col-12">
+            <profile></profile>
+        </div>
+    </div>
+{% endblock %}
+{% block script_footer %}
+    {% render_bundle 'profile' %}
+{% endblock %}

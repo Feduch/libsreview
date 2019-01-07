@@ -1,0 +1,71 @@
+{% load l10n static thumbnail %}
+{% for book in books %}
+    <div class="card libs__book">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-lg-2 col-md-2 col-sm-2 col-xs-12">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="product-wrapper-2">
+                                Место №{{ forloop.counter }}
+                                <div class="product-img">
+                                    <a href="{{ book.get_absolute_url }}">
+                                        {% if book.get_image_preview %}
+                                            <img
+                                                    src="{{ book.get_image_preview }}"
+                                                    title="{{ book.title }}"
+                                                    class="figure-img img-fluid"
+                                                    alt="{{ book.title }}"
+                                            />
+                                        {% else %}
+                                            <img
+                                                    src="{% static 'images/no_book_cover.png' %}"
+                                                    title="{{ book.title }}"
+                                                    class="figure-img img-fluid"
+                                                    alt="{{ book.title }}"
+                                            />
+                                        {% endif %}
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <star-rating
+                                    v-bind:increment="1"
+                                    :max-rating="5"
+                                    :round-start-rating="false"
+                                    inactive-color="#ccc"
+                                    active-color="#45a6f3"
+                                    v-bind:star-size="15"
+                                    :read-only="false"
+                                    :rating="{{ book.rating | unlocalize }}"
+                                    @rating-selected="setBookRating($event, {{ book.id }})"
+                            >
+                            </star-rating>
+                            </div>
+                            <div class="col-12">
+                                <span title="Просмотры"><img src="{% static 'images/eye.png' %}" alt="Количество просмотров"> {{ book.show_counter }}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-10 col-md-10 col-sm-10 col-xs-12">
+                        <div class="libs__book_title">
+                            Книга: <a href="{{ book.get_absolute_url }}">{{ book.title }}</a>
+                        </div>
+                        <div class="libs__book_author">
+                            Автор(ы): {{ book.get_link_authors | safe }}
+                        </div>
+                        <div class="libs__book_genres">
+                            Жанр(ы): {{ book.get_link_genres | safe }}
+                        </div>
+                        <div class="libs__book_year">
+                            Год издания: {{ book.year }}
+                        </div>
+                        <div class="libs__book_description">
+                            {{ book.description | striptags | truncatewords:20 }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+{% endfor %}

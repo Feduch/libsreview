@@ -1,0 +1,60 @@
+{% load l10n static %}
+{% for author in authors %}
+    <div class="card libs__author">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-lg-2 col-md-2 col-sm-2 col-xs-12">
+                    <div class="product-wrapper-2">
+                        <div class="product-img">
+                            <a href="{{ author.get_absolute_url }}">
+                                {% if author.photo %}
+                                    <img
+                                            src="{{ author.photo }}"
+                                            title="{{ author.name }}"
+                                            class="figure-img img-fluid"
+                                    />
+                                {% else %}
+                                    <i class="far fa-user-circle fa-5x"></i>
+                                {% endif %}
+                            </a>
+                        </div>
+                        <div class="libs__rating">
+                            <star-rating
+                                    v-bind:increment="1" :round-start-rating="false"
+                                    v-bind:max-rating="5"
+                                    inactive-color="#ccc"
+                                    active-color="#45a6f3"
+                                    v-bind:star-size="15"
+                                    :read-only="false"
+                                    :rating="{{ author.rating | unlocalize }}"
+                                    @rating-selected="setAuthorRating($event, {{ author.id }})"
+                            >
+                            </star-rating>
+                        </div>
+                        <div class="libs__views">
+                            <span title="Просмотры">
+                                <img src="{% static 'images/eye.png' %}" alt="Количество просмотров"> {{ author.show_counter }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-10 col-md-10 col-sm-10 col-xs-12">
+                    <div class="libs__author_name">
+                        Автор: <a href="{{ author.get_absolute_url }}">{{ author.name }}</a>
+                    </div>
+                    {% if author_list %}
+                    <div class="libs__author_birthday">
+                        Дата рождения: {{ author.birthday }}
+                    </div>
+                    {% endif %}
+                    <div class="libs__author_book_count">
+                         Всего книг: {{ author.book_count }}
+                    </div>
+                    <div class="libs__author_description">
+                        {{ author.description | striptags | truncatechars:80 }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endfor %}

@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+{% load static books_inline cache %}
+{% load render_bundle from webpack_loader %}
+{% block title %}Список книг{% endblock %}
+{% block description %}{% endblock %}
+{% block page_title %}Все книги{% endblock %}
+{% block page_title_small %}Все книги{% endblock %}
+{% block breadcrumb %}<a href="/">Главная</a> / Список книг{% endblock %}
+{% block content %}
+    {% cache 3600 books_list page %}
+        <div class="row" id="vue-books-list">
+            <div class="col-lg-8">
+                <div class="row d-none d-md-block">
+                    <div class="col-12">
+                        <p>
+                            Дорогой читатель, на этой странице у тебя доступ к базе из более {{ count }} книг. В форме ниже ты можешь
+                            выбрать тонкими настройками поиска, то, что хочешь почитать. Или, можно перейти на страницу готовых
+                            рейтингов (лучших 2017 лучшие октября, лучшие за неделю)
+                        </p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12">
+                        <book-filter></book-filter>
+                    </div>
+                </div>
+                <div id="libs__books">
+                    <div class="libs__books">
+                        {% books_inline books %}
+                    </div>
+                    {% if books.has_other_pages %}
+                        <nav aria-label="Книги">
+                            <ul class="pagination">
+                                <li class="page-item">
+                                    {% if books.has_previous %}
+                                        <a class="page-link" href="?page={{ books.previous_page_number }}" aria-label="Назад">
+                                            <span aria-hidden="true">&laquo;</span>
+                                            <span class="sr-only">Назад</span>
+                                        </a>
+                                    {% endif %}
+                                </li>
+                                {% for object in books.paginator.page_range %}
+                                    {% if forloop.counter < 10 %}
+                                        {% if books.number ==  forloop.counter %}
+                                            <li class="page-item active"><a class="page-link" href="?page={{ forloop.counter }}">{{ books.number }}</a></li>
+                                        {% else %}
+                                            <li class="page-item"><a class="page-link" href="?page={{ forloop.counter }}">{{ forloop.counter }}</a></li>
+                                        {% endif %}
+                                    {% endif %}
+                                {% endfor %}
+                                <li class="page-item">
+                                    {% if books.has_next %}
+                                        <a class="page-link" href="?page={{ books.next_page_number }}" aria-label="Вперед">
+                                            <span aria-hidden="true">&raquo;</span>
+                                            <span class="sr-only">Вперед</span>
+                                        </a>
+                                    {% endif %}
+                                </li>
+                            </ul>
+                        </nav>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="col-12 col-lg-4">
+                {% include "ratings_block_right.html" %}
+            </div>
+        </div>
+    {% endcache %}
+{% endblock %}
+{% block script_footer %}
+    {% render_bundle 'books' %}
+{% endblock %}

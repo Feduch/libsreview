@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% load render_bundle from webpack_loader %}
+{% block title %}Добавить пост{% endblock %}
+{% block description %}Добавить пост{% endblock %}
+{% block keywords %}Добавить пост{% endblock %}
+{% block page_title %}Добавить пост{% endblock %}
+{% block page_title_small %}Добавить пост{% endblock %}
+{% block breadcrumb %}<a href="/">Главная</a> / <a href="/publication/">Литературный блог</a> / Добавить пост{% endblock %}
+{% block content %}
+    <div class="row">
+        <div class="col-12">
+            <publication-editor
+                :publication-id="{{ id }}"
+            ></publication-editor>
+        </div>
+    </div>
+{% endblock %}
+{% block script_footer %}
+    {% render_bundle 'publications' %}
+{% endblock %}

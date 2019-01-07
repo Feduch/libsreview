@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% load books_inline %}
+{% load render_bundle from webpack_loader %}
+{% load static %}
+{% block title %}Книги про попаданцев{% endblock %}
+{% block description %}Книги про попаданцев{% endblock %}
+{% block page_title %}Книги про попаданцев{% endblock %}
+{% block page_title_small %}Книги про попаданцев{% endblock %}
+{% block breadcrumb %}<a href="/">Главная</a> / <a href="/ratings/">Рейтинги</a> / Книги про попаданцев {% endblock %}
+{% block content %}
+<div class="row">
+    <div class="col-12 col-lg-8">
+            <div class="row la__books" id="libs-rating-books">
+                {% books_inline books %}
+            </div>
+        </div>
+        <div class="col-12 col-lg-4">{% include "ratings_block_right.html" %}</div>
+    </div>
+    {% include "ratings_block_bottom.html" %}
+{% endblock %}
+{% block script_footer %}
+    {% render_bundle 'ratings' %}
+{% endblock %}

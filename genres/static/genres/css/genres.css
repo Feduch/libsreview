@@ -1,0 +1,25 @@
+.la__genre_title,
+.la__genre_author,
+.la__genre_genre,
+.la__genre_description,
+.la__genres_related {
+    font-size: 12px;
+}
+
+.la__genre_title {
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+
+.la__genre_description {
+    background-color: #F3F3F3;
+    padding: 14px 24px;
+}
+
+.la__genre {
+    padding-bottom: 10px;
+}
+
+.col-12 h2 {
+    margin-top: 10px;
+}

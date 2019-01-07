@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% load render_bundle from webpack_loader %}
+{% block title %}Добавить коллекцию{% endblock %}
+{% block description %}Добавить коллекцию{% endblock %}
+{% block keywords %}Добавить коллекцию{% endblock %}
+{% block page_title %}Добавить коллекцию{% endblock %}
+{% block page_title_small %}Добавить коллекцию{% endblock %}
+{% block breadcrumb %}<a href="/">Главная</a> / <a href="/collections/">Коллекции</a> / Добавить коллекцию{% endblock %}
+{% block content %}
+    <div class="row">
+        <div class="col-12">
+            <collection-editor
+                    :collection-id="{{ id }}"
+                ></collection-editor>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block script_footer %}
+    {% render_bundle 'collections' %}
+{% endblock %}

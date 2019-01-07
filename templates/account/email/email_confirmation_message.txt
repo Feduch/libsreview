@@ -1,0 +1,7 @@
+{% load account %}{% user_display user as user_display %}{% load i18n %}{% autoescape off %}{% blocktrans with site_name=current_site.name site_domain=current_site.domain %}Здравствуйте!
+
+Вы получили это письмо, потому что пользователь {{ user_display }} указал этот адрес.
+
+Для подтверждения пройдите по ссылке {{ activate_url }}
+{% endblocktrans %}{% endautoescape %}
+{% blocktrans with site_name=current_site.name site_domain=current_site.domain %}С уважением, Libs.ru!{% endblocktrans %}

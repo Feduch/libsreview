@@ -1,0 +1,149 @@
+{% extends 'base.html' %}
+{% load l10n %}
+{% load render_bundle from webpack_loader %}
+{% block title %}Читать онлайн книгу {{ title }}{% endblock %}
+{% block description %}{{ text| striptags | truncatewords:50}}{% endblock %}
+{% block page_title %}Книга {{ title }}{% endblock %}
+{% block page_title_small %}Книга {{ title }}{% endblock %}
+{% block breadcrumb %}
+    <div itemscope itemtype="http://schema.org/BreadcrumbList">
+        <span itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem">
+            <a itemprop="item" href="/"><span itemprop="name">Главная</span></a> /
+            <meta itemprop="position" content="1" />
+        </span>
+        <span itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem">
+            <a itemprop="item" href="/book/"><span itemprop="name">Книги</span></a> /
+            <meta itemprop="position" content="2" />
+        </span>
+        <span itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem">
+            <a itemprop="item" href="{{ book_url }}"><span itemprop="name">{{ title }}</span></a> /
+            <meta itemprop="position" content="3" />
+        </span>
+        <span itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem">
+            <a itemprop="item" href="{{ read_url }}"><span itemprop="name">Читать онлайн</span></a>
+            <meta itemprop="position" content="4" />
+        </span>
+    </div>
+{% endblock %}
+
+{% block content %}
+    <div class="row" id="read-online">
+        <div class="col-12">
+            {{ text_part.0 | safe }}
+        </div>
+        <div class="col-12 read-online-button">
+            <div class="row">
+                <div class="col-12 col-md-12 col-lg-4" style="padding-top: 4px">
+                    <star-rating
+                            v-bind:increment="1"
+                            v-bind:max-rating="5"
+                            :round-start-rating="false"
+                            inactive-color="#ccc"
+                            active-color="#45a6f3"
+                            v-bind:star-size="25"
+                            :read-only="false"
+                            :rating="{{ rating | unlocalize }}"
+                            @rating-selected="setBookRating($event, {{ id }})"
+                    >
+                    </star-rating>
+                </div>
+                <div class="col-12 col-md-12 col-lg-4 read-button">
+                    <a href="{{ book_url }}#libs-add-comments" class="btn btn-primary btn-sm">Оставить отзыв</a>
+                </div>
+                {% if user.is_authenticated %}
+                    <div class="col-12 col-md-12 col-lg-4 read-button"><a href="/publication/editor/" class="btn btn-primary btn-sm">Написать рецензию</a></div>
+                {% else %}
+                    <div class="col-12 col-md-12 col-lg-4 read-button"><a title="Вход" href="#" data-toggle="modal" data-target="#LogInModal" class="btn btn-primary btn-sm">Написать рецензию</a></div>
+                {% endif %}
+            </div>
+        </div>
+        <div class="col-12 read-text" id="read-text">
+            {{ text_part.1 | safe }}
+        </div>
+        <div class="col-12 text-right read-online-button-read-more">
+            <button class="btn btn-primary btn-sm" data-page="1" id="read-more">Читать далее</button>
+        </div>
+        <div class="col-12" id="partner-price">
+            <h5>Купить книгу "{{ title }}"</h5>
+            <partner-price
+                    title="{{ title }}"
+                    author="{{ author }}"
+                    libsid="{{ id }}"
+            ><img src="/static/images/nav_preloader.gif" /></partner-price>
+        </div>
+        <div class="col-12 readonlineinteresting">
+            <h5>ИНТЕРЕСНО:</h5>
+            <ul>
+                <ol>
+                    - Посмотреть все книги автора(ов): {{ authors | safe }}
+                </ol>
+                {% if series %}
+                    <ol>
+                        - <a href="{{ series }}">Посмотреть все книги этой серии</a>
+                    </ol>
+                {% endif %}
+                <ol>- Посмотреть лучшие книги в этом жанре: {{ genres | safe }}</ol>
+                {% if collections %}
+                    <ol>
+                        - Посмотреть коллекции с этой книгой: {{ collections | safe }}
+                    </ol>
+                {% endif %}
+            </ul>
+
+            <h5>КАК НАЙТИ ЧТО ПОЧИТАТЬ:</h5>
+            <ul>
+                <ol>
+                    - <a href="{% url 'rating-best-today' %}">Лучшие книги дня</a>
+                </ol>
+                <ol>
+                    - <a href="{% url 'rating-best-week' %}">Лучшие книги недели</a>
+                </ol>
+                <ol>
+                    - <a href="/nav/">Тонкий поиск в книжном навигаторе</a>
+                </ol>
+            </ul>
+        </div>
+    </div>
+    <script>
+        var text = {{ text_part|safe }};
+
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelector('#read-more').onclick = getNextpage;
+        });
+
+        function getNextpage() {
+            page_num = document.querySelector('#read-more').dataset.page;
+            page_num++;
+            document.querySelector('#read-text').innerHTML += text[page_num];
+            document.querySelector('#read-more').dataset.page = page_num
+        }
+    </script>
+    <style>
+        .libs__main {
+            max-width: 600px;
+        }
+
+        div#partner-price {
+            background-color: aliceblue;
+            padding: 10px;
+            margin-top: 20px;
+        }
+        .col-12.readonlineinteresting {
+            background-color: antiquewhite;
+            padding: 10px;
+            margin-top: 10px;
+            margin-bottom: 10px;
+        }
+        .col-12.readonlineinteresting ul,
+        .col-12.readonlineinteresting ul ol {
+            padding: 0;
+        }
+
+        .read-button {
+            padding-top: 8px;
+        }
+    </style>
+{% endblock %}
+{% block script_footer %}
+    {% render_bundle 'book-read' %}
+{% endblock %}
